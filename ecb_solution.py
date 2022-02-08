@@ -1,0 +1,10 @@
+# Here is an admin cookie: 
+# 4dc9dd530af321b0ed9c0e80d394163c35bc533af3ffb10923d6e27d1453a1ce2fe703d05d9dd8c88d8dd849ab1dbadb69a4b5f6e5e3f03bb760342d70ac12ef
+# But here is yours: 
+# 45eee3f9bc2cbdbfb277bddbafde65d635bc533af3ffb10923d6e27d1453a1ce2fe703d05d9dd8c88d8dd849ab1dbadb0f492abf6a6fe83eb7b60422b7980e9b
+# What is your cookie?
+
+cookie = "45eee3f9bc2cbdbfb277bddbafde65d635bc533af3ffb10923d6e27d1453a1ce2fe703d05d9dd8c88d8dd849ab1dbadb0f492abf6a6fe83eb7b60422b7980e9b"
+print(cookie[47:57])
+
+# 4dc9dd530af321b0ed9c0e80d394163c35bc533af3ffb10923d6e27d1453a1ce2fe703d05d9dd8c88d8dd849ab1dbadb0f492abf6a6fe83eb7b60422b7980e9b
