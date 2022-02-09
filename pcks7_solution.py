@@ -40,13 +40,13 @@ for xor_val in range(0x00, 0xFF):
         print(hex(xor_val))
 
 
-correct = ""
-for pos in range(32):
+correct = "e53842a369eb89a44ae1159b3b73f3d3"
+for pos in range(16):
     for i in range(256):
         xor_val = hex(i).split("0x")[1]
         result = "00" * (32 - 1 - pos) + ("0" if len(xor_val) % 2 != 0 else "") + xor_val + correct
         oracle.sendline(result)
         response = oracle.recvall()
         if "valid" in response.decode():
-            correct += xor_val
+            correct = xor_val + correct
             print(result)
