@@ -141,7 +141,8 @@ def generate_cipher(dec_c_6, valid_plaintext_hex):
     # print("cookie with c345 replaced:" + cookie[:64] + c_desired_3 + c_desired_4 + c_desired_5 + cookie[160:192])
 
     original_c_2 = cookie[32:64]
-    tmp_p3_array = attack_block(original_c_2 + c_desired_3, "", "")
+    tmp_p3_array = [122, 230, 186, 210, 37, 45, 98, 127, 130, 98, 171, 39, 67, 20, 63, 20]
+    # attack_block(original_c_2 + c_desired_3, "", "")
     print(tmp_p3_array)
     
     # reversely construct tmp p3
@@ -151,7 +152,7 @@ def generate_cipher(dec_c_6, valid_plaintext_hex):
         while len(p3_char) < 2:
             p3_char = "0" + p3_char
         tmp_p3 += p3_char
-    print("tmp p3 in hex is: " + tmp_p3)
+    print("tmp p3 in hex is: " + tmp_p3)    # 143f144327ab62827f622d25d2bae67a
     
     dec_c_3 = int(tmp_p3, 16) ^ int(original_c_2, 16)
 
@@ -165,7 +166,8 @@ def generate_cipher(dec_c_6, valid_plaintext_hex):
     print("cookie with c2345 replaced:" + cookie[:32] + c_desired_2 + c_desired_3 + c_desired_4 + c_desired_5 + cookie[160:192])
 
     original_c_1 = cookie[0:32]
-    tmp_p2_array = attack_block(original_c_1 + c_desired_2, "", "")
+    tmp_p2_array = [43, 167, 182, 141, 46, 213, 52, 167, 13, 68, 198, 65, 28, 176, 223, 212]
+    # attack_block(original_c_1 + c_desired_2, "", "")
     print(tmp_p2_array)
     
     # reversely construct tmp p2
