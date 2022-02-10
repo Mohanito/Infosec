@@ -70,11 +70,31 @@ def attack_block(cipher, pre, post):
                 # plaintext = plaintext_byte + plaintext
                 plaintext = chr((pos + 1) ^ xor_val) + plaintext
         print("New iteration: current plaintext is:" + plaintext)
+    return
 
 
 if __name__ == "__main__":
-    # try decrypting the first block
+    # result of the first block 0 - 64
     # {"username": "gu
+
+    # result of 32 - 96:
+    # est", "expires":
+    # [58, 34, 115, 101, 114, 105, 112, 120, 101, 34, 32, 44, 34, 116, 115, 101, 1, 13, 34]
+
+    # result of 64 - 128: (1 space char at the beginning)
+    #  "2000-01-07", "
+    # [34, 32, 44, 34, 55, 48, 45, 49, 48, 45, 48, 48, 48, 50, 34, 32]
+
+    # result of 96 - 160:
+    # is_admin": "fals
+    # [115, 108, 97, 102, 34, 32, 58, 34, 110, 105, 109, 100, 97, 95, 115, 105]
+
+    # last block reversed order
+    # [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 125, 34, 101]
+    # obviously, plaintext is e"} and 13 paddings
+
+    # plaintext is {"username": "guest", "expires": "2000-01-07", "is_admin": "false"} and 13 paddings
+
     IV_HEX = ""
     for ch in IV:
         ch_hex = hex(ord(ch))[2:]
@@ -83,18 +103,25 @@ if __name__ == "__main__":
         IV_HEX += ch_hex
     # IV_HEX seems to be identical to cookie[0:64]
 
-    # part 1: decryption attack
-    # 0 - 64, 32 - 96, 64 - 128, 128 - 192
-    for blockIndex in range(5):
-        # if blockIndex == 5:
-        #     # first half now becomes IV
-        #     attack_block(IV_HEX + cookie[0:32], "", "")
-        #     break
-        # 2-block segments = 64 chars = 32 bytes
-        c = cookie[len(cookie) - 64 * (blockIndex + 1): len(cookie) - 64 * blockIndex]
-        pre = cookie[0: len(cookie) - 64 * (blockIndex + 1)]
-        post = cookie[len(cookie) - 64 * blockIndex :]
-        attack_block(c, pre, post)
+    # part 1: decryption attack - for simplicity, run this 5 times
+    # 0 - 64, 32 - 96, 64 - 128, 96 - 160, 128 - 192
+    # attack_block(cookie[0:64], "", "")
+    # attack_block(cookie[32:96], "", "")
+    # attack_block(cookie[64:128], "", "")
+    attack_block(cookie[96:160], "", "")
+    # attack_block(cookie[128:192], "", "")
+
+    # # for loop method unused for now, program may not exit normally
+    # for blockIndex in range(6):
+    #     # if blockIndex == 5:
+    #     #     # first half now becomes IV
+    #     #     attack_block(IV_HEX + cookie[0:32], "", "")
+    #     #     break
+    #     # 2-block segments = 64 chars = 32 bytes
+    #     c = cookie[len(cookie) - 64 * (blockIndex + 1): len(cookie) - 64 * blockIndex]
+    #     # pre = cookie[0: len(cookie) - 64 * (blockIndex + 1)]
+    #     # post = cookie[len(cookie) - 64 * blockIndex :]
+    #     attack_block(c, "", "")
     
     print("Decryption done. Plaintext is: " + plaintext)
 
@@ -136,160 +163,3 @@ if __name__ == "__main__":
 
 # used to xor original c_n
 # xor_mask = "00000000000000000000000000000000"
-#====
-
-# def split_len(seq, length):
-#     return [seq[i : i + length] for i in range(0, len(seq), length)]
-
-
-# """ Create custom block for the byte we search"""
-
-
-# def block_search_byte(size_block, i, pos, l):
-#     hex_char = hex(pos).split("0x")[1]
-#     return (
-#         "00" * (size_block - (i + 1))
-#         + ("0" if len(hex_char) % 2 != 0 else "")
-#         + hex_char
-#         + "".join(l)
-#     )
-
-
-# """ Create custom block for the padding"""
-
-
-# def block_padding(size_block, i):
-#     l = []
-#     for t in range(0, i + 1):
-#         l.append(
-#             ("0" if len(hex(i + 1).split("0x")[1]) % 2 != 0 else "")
-#             + (hex(i + 1).split("0x")[1])
-#         )
-#     return "00" * (size_block - (i + 1)) + "".join(l)
-
-
-# def hex_xor(s1, s2):
-#     b = bytearray()
-#     for c1, c2 in zip(bytes.fromhex(s1), cycle(bytes.fromhex(s2))):
-#         b.append(c1 ^ c2)
-#     return b.hex()
-
-
-# def run(cipher, size_block, host, url, cookie, method, post, error):
-#     cipher = cipher.upper()
-#     found = False
-#     valide_value = []
-#     result = []
-#     cipher_block = split_len(cookie, 32)
-
-#     # for each cipher_block
-#     for block in reversed(range(1, len(cipher_block))):
-#         # for each byte of the block
-#         for i in range(0, size_block):
-#             # test each byte max 255
-#             for ct_pos in range(0, 256):
-#                 oracle = remote('192.168.2.83', 26151)
-#                 oracle.recvline_contains("What is your cookie?", keepends = False, timeout = 5)
-#                 if ct_pos != i + 1 or (
-#                     len(valide_value) > 0 and int(valide_value[-1], 16) == ct_pos
-#                 ):
-
-#                     bk = block_search_byte(size_block, i, ct_pos, valide_value)
-#                     bp = cipher_block[block - 1]
-#                     bc = block_padding(size_block, i)
-
-#                     tmp = hex_xor(bk, bp)
-#                     cb = hex_xor(tmp, bc).upper()
-
-#                     up_cipher = cb + cipher_block[block]
-                   
-#                     oracle.sendline(message)
-#                     response = oracle.recvall()
-
-#                     if "username" in response.decode():
-#                         exe = re.findall("..", cb)
-#                         discover = ("").join(exe[size_block - i : size_block])
-#                         current = ("").join(exe[size_block - i - 1 : size_block - i])
-#                         find_me = ("").join(exe[: -i - 1])
-
-#                         sys.stdout.write(
-#                             "\r[+] Test [Byte %03i/256 - Block %d ]: \033[31m%s\033[33m%s\033[36m%s\033[0m"
-#                             % (ct_pos, block, find_me, current, discover)
-#                         )
-#                         sys.stdout.flush()
-
-#                     if test_validity(response, error):
-
-#                         found = True
-#                         connection.close()
-
-#                         # data analyse and insert in right order
-#                         value = re.findall("..", bk)
-#                         valide_value.insert(0, value[size_block - (i + 1)])
-
-#                         print("")
-#                         print("[+] Block M_Byte : %s" % bk)
-#                         print("[+] Block C_{i-1}: %s" % bp)
-#                         print("[+] Block Padding: %s" % bc)
-#                         print("")
-
-#                         bytes_found = "".join(valide_value)
-#                         if (
-#                             i == 0
-#                             and int(bytes_found, 16) > size_block
-#                             and block == len(cipher_block) - 1
-#                         ):
-#                             print(
-#                                 "[-] Error decryption failed the padding is > "
-#                                 + str(size_block)
-#                             )
-#                             sys.exit()
-
-#                         print(
-#                             "\033[36m" + "\033[1m" + "[+]" + "\033[0m" + " Found",
-#                             i + 1,
-#                             "bytes :",
-#                             bytes_found,
-#                         )
-#                         print("")
-
-#                         break
-#             if found == False:
-#                 # lets say padding is 01 for the last byte of the last block (the padding block)
-#                 if len(cipher_block) - 1 == block and i == 0:
-#                     value = re.findall("..", bk)
-#                     valide_value.insert(0, "01")
-#                     if args.verbose == True:
-#                         print("")
-#                         print(
-#                             "[-] No padding found, but maybe the padding is length 01 :)"
-#                         )
-#                         print("[+] Block M_Byte : %s" % bk)
-#                         print("[+] Block C_{i-1}: %s" % bp)
-#                         print("[+] Block Padding: %s" % bc)
-#                         print("")
-#                         bytes_found = "".join(valide_value)
-#                 else:
-#                     print("\n[-] Error decryption failed")
-#                     result.insert(0, "".join(valide_value))
-#                     hex_r = "".join(result)
-#                     print("[+] Partial Decrypted value (HEX):", hex_r.upper())
-#                     padding = int(hex_r[len(hex_r) - 2 : len(hex_r)], 16)
-#                     print(
-#                         "[+] Partial Decrypted value (ASCII):",
-#                         bytes.fromhex(hex_r[0 : -(padding * 2)]).decode(),
-#                     )
-#                     sys.exit()
-#             found = False
-
-#         result.insert(0, "".join(valide_value))
-#         valide_value = []
-
-#     print("")
-#     hex_r = "".join(result)
-#     print("[+] Decrypted value (HEX):", hex_r.upper())
-#     padding = int(hex_r[len(hex_r) - 2 : len(hex_r)], 16)
-#     print(
-#         "[+] Decrypted value (ASCII):",
-#         bytes.fromhex(hex_r[0 : -(padding * 2)]).decode(),
-#     )
