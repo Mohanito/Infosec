@@ -28,7 +28,7 @@ def attack_block(cipher, pre, post):
             # segment that should not be modified
             message = cipher[0: 32 - 2 * (pos + 1)]
 
-            # xor cipher[0:32] with current xor_val
+            # xor current byte with current xor_val
             replaced_byte = hex(
                 int(cipher[32 - 2 * (pos + 1): 32 - 2 * pos], 16) ^ xor_val)[2:]
             while len(replaced_byte) < 2:
@@ -40,7 +40,7 @@ def attack_block(cipher, pre, post):
                 replaced_byte = hex(
                     int(cipher[32 - 2 * (prev_pos + 1): 32 - 2 * prev_pos], 16)
                     ^ prev_xor_vals[prev_pos]
-                    ^ pos)[2:]
+                    ^ pos + 1)[2:]
                 while len(replaced_byte) < 2:
                     replaced_byte = "0" + replaced_byte
                 message += replaced_byte
@@ -57,7 +57,7 @@ def attack_block(cipher, pre, post):
             # print(len(message)) # 192
             oracle.sendline(message)
             response = oracle.recvall()
-            if pos == 2:
+            if pos == 1:
                 print(response)
 
             if "username" in response.decode():
