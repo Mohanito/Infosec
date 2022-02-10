@@ -10,15 +10,19 @@ prev_xor_vals = []
 correct_guesses = []
 IV="This is an IV456"
 
+'''
+    attack_block: decrypts one block of cookie into plaintext
 
+    cipher: 2-block segment of the original cookie
+    if 192 chars instead of 64 chars need to be sent,
+    send pre + C' + post as message.
+'''
 def attack_block(cipher, pre, post):
     global plaintext    # removing this may cause "referenced before assignment error"
 
     # cipher contains 2 blocks, cipher[0:32] and cipher[32:]
     for pos in range(16):   # 16 bytes per block
         for xor_val in range(256):    # 0x00 to 0xFF
-            # unused for now
-            # xor_val_hex = hex(xor_val).split("0x")[1]
 
             oracle = remote('192.168.2.83', 26151)
             # get rid of welcome messages
@@ -49,7 +53,6 @@ def attack_block(cipher, pre, post):
             # append the second half
             message += cipher[32:]
 
-            # print(len(message)) # 192
             oracle.sendline(message)
             response = oracle.recvall()
 
@@ -64,10 +67,6 @@ def attack_block(cipher, pre, post):
                     correct_guesses.append(xor_val ^ (pos + 1))
                 print(prev_xor_vals)
                 print(correct_guesses)
-                # plaintext_byte = hex((pos + 1) ^ xor_val).split("0x")[1]
-                # while len(plaintext_byte) < 2:
-                #     plaintext_byte = "0" + plaintext_byte
-                # plaintext = plaintext_byte + plaintext
                 plaintext = chr((pos + 1) ^ xor_val) + plaintext
         print("New iteration: current plaintext is:" + plaintext)
     return
@@ -110,6 +109,8 @@ if __name__ == "__main__":
     # attack_block(cookie[64:128], "", "")
     attack_block(cookie[96:160], "", "")
     # attack_block(cookie[128:192], "", "")
+    
+    print("Decryption done. Plaintext is: " + plaintext)
 
     # # for loop method unused for now, program may not exit normally
     # for blockIndex in range(6):
@@ -123,7 +124,6 @@ if __name__ == "__main__":
     #     # post = cookie[len(cookie) - 64 * blockIndex :]
     #     attack_block(c, "", "")
     
-    print("Decryption done. Plaintext is: " + plaintext)
 
     # part 2: encryption attack
     # first get dec(c_n)
